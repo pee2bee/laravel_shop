@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'PagesController@root');
+Route::get('/', 'PagesController@root')->middleware(['verified']);
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 
