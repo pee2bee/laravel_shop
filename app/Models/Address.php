@@ -25,6 +25,9 @@ class Address extends Model
     }
     //访问器，按照驼峰式命名规则，访问$this->full_address时返回
     public function getFullAddressAttribute(  ) {
-        return $this->province_name + ' ' + $this->city_name + ' ' + $this->district_name + ' ' + $this->strict;
+        return $this->province_name . ' ' . $this->city_name . ' ' . $this->district_name . ' ' . $this->strict;
     }
+    protected $fillable = [
+      'province_name', 'city_name', 'district_name', 'province_code', 'city_code', 'district_code','strict', 'contact_name', 'contact_phone'
+    ];
 }

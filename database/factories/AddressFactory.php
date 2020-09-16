@@ -22,7 +22,7 @@ $factory->define(Address::class, function (Faker $faker) use ($address) {
         'city_name'     => $address[1],
         'district_name' => $address[2],
         'strict'        => $faker->address,
-        'phone'         => $faker->phoneNumber,
+        'contact_phone'         => $faker->phoneNumber,
         'contact_name'  => $faker->name,
         'created_at' =>Date::yesterday(),
         'updated_at' => Date::now()

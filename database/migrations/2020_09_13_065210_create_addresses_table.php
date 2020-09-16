@@ -26,7 +26,7 @@ class CreateAddressesTable extends Migration
             $table->string('strict',20)->nullable(true)->comment('街道');
             $table->string('zipcode',10)->nullable(true)->comment('邮编');
             $table->string('contact_name')->comment('收件人');
-            $table->string('phone',20)->comment('手机');
+            $table->string('contact_phone',20)->comment('手机');
             $table->dateTime('last_used_at')->nullable(true)->comment('最后使用时间');
             $table->timestamps();
         });

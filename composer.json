@@ -9,12 +9,17 @@
     "license": "MIT",
     "require": {
         "php": "^7.2.5",
+        "barryvdh/laravel-debugbar": "^3.5",
+        "barryvdh/laravel-ide-helper": "^2.8",
+        "doctrine/dbal": " ~2.3",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "^7.24",
         "laravel/tinker": "^2.0",
-        "laravel/ui": "^2.9"
+        "laravel/ui": "^2.9",
+        "overtrue/laravel-lang": "^4.1",
+        "viacreative/sudo-su": "~1.1"
     },
     "require-dev": {
         "facade/ignition": "^2.0",
