@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-
+use Encore\Admin\Auth\Database\AdminTablesSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,5 +14,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(UserSeeder::class);
         $this->call(AddressSeeder::class);
+        $this->call(AdminTablesSeeder::class);
     }
 }

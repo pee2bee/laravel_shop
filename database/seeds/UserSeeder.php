@@ -18,6 +18,10 @@ class UserSeeder extends Seeder
 
         User::insert($user);
 
+        $user = User::find(1);
+        $user->name = 'master';
+        $user->save();
+
 
     }
 }
