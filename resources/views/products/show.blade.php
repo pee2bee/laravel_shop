@@ -37,7 +37,11 @@
               </div>
               <div class="cart_amount"><label>数量</label><input type="text" class="form-control form-control-sm" value="1"><span>件</span><span class="stock"></span></div>
               <div class="buttons">
-                <button class="btn btn-success btn-favor">❤ 收藏</button>
+                @if($favored)
+                  <button class="btn btn-danger btn-disfavor">取消收藏</button>
+                @else
+                  <button class="btn btn-success btn-favor">❤ 收藏</button>
+                @endif
                 <button class="btn btn-primary btn-add-to-cart">加入购物车</button>
               </div>
             </div>
@@ -67,12 +71,52 @@
 
 @section('js')
   <script>
+
       $(document).ready(function () {
           $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
           $('.sku-btn').click(function () {
               $('.product-info .price span').text($(this).data('price'));
               $('.product-info .stock').text('库存：' + $(this).data('stock') + '件');
           });
+
+          //监听收藏按钮
+          $('.product-info .btn-favor').click(function () {
+              axios.post('{{ route('products.favor' ,['product'=>$product->id]) }}')
+                  .then(function () { //成功执行
+                  swal('操作成功', '','success');
+                  location.reload()
+              }, function (error) { //失败执行
+                  //判断返回状态码，如果是401，就提示未登录
+                  if (error.response && error.response.status === 401) {
+                      swal('请先登录','','error');
+                  }else if (error.response && (error.response.msg || error.response.messga)) {
+                      //其他错误信息
+                      swal(error.response.msg? error.response.msg : error.response.message,'','error')
+                  }else {
+                      //系统挂了
+                      swal('系统错误','','error')
+                  }
+              })
+          })
+          //监听收藏按钮
+          $('.product-info .btn-disfavor').click(function () {
+              axios.delete('{{ route('products.disfavor' ,['product'=>$product->id]) }}')
+                  .then(function () { //成功执行
+                      swal('操作成功', '','success');
+                      location.reload()
+                  }, function (error) { //失败执行
+                      //判断返回状态码，如果是401，就提示未登录
+                      if (error.response && error.response.status === 401) {
+                          swal('请先登录','','error');
+                      }else if (error.response && (error.response.msg || error.response.messga)) {
+                          //其他错误信息
+                          swal(error.response.msg? error.response.msg : error.response.message,'','error')
+                      }else {
+                          //系统挂了
+                          swal('系统错误','','error')
+                      }
+                  })
+          })
       });
   </script>
 @stop

@@ -27,6 +27,10 @@ Route::group(['middleware'=>['auth', 'verified']],function () {
    Route::delete('addresses/{address}','AddressesController@destroy')->name('addresses.destroy');
    Route::get('addresses/{address}','AddressesController@edit')->name('addresses.edit');
    Route::patch('addresses/{address}','AddressesController@update')->name('addresses.update');
+
+   Route::post('products/{product}/favorite','ProductsController@favor')->name('products.favor');
+   Route::delete('products/{product}/favorite','ProductsController@disfavor')->name('products.disfavor');
+   Route::get('products/favorites','ProductsController@favorites')->name('products.favorites');
 });
 
 /*不需要auth认证的路由*/

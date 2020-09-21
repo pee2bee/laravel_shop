@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
 
         $user = User::find(1);
         $user->name = 'master';
+        $user->email = 'master@test.com';
         $user->save();
 
 

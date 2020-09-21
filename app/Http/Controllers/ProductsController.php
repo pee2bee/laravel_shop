@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InvalidRequestException;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller
@@ -42,6 +44,7 @@ class ProductsController extends Controller
             }
         }
 
+
         $products = $builder->paginate(16);
         $filters = [
         'search' => $search,
@@ -68,11 +71,66 @@ class ProductsController extends Controller
         //
         $product = Product::query()->with('productSkus')->find($id);
         if (! $product->on_sale){
-            throw new \Exception('商品未上架');
+            throw new InvalidRequestException('商品未上架');
+        }
+        $user = \request()->user();
+        $favored = false;//默认未收藏
+        //判断user是否登录，
+        //登录就查询是否已收藏该商品
+        if ($user) {
+            //boolval()把值转化成Boolean格式
+            $favored = boolval($user->favoriteProducts()->find($product->id));
         }
 
-        return view('products.show',compact('product'));
+        return view('products.show',compact('product','favored'));
     }
+
+    /**
+     * 收藏商品
+     * @param Product $product
+     *
+     * @return array
+     */
+    public function favor(Product $product) {
+
+        $user = \request()->user();
+        //已经收藏了
+        if ($user->favoriteProducts()->find($product->id)) {
+            //直接返回空
+            return [];
+        }
+        //执行收藏
+        $user->favoriteProducts()->attach($product->id);
+        //返回空
+        return [];
+    }
+
+    public function disfavor(Product $product ) {
+        $user = \request()->user();
+        $user->favoriteProducts()->detach($product->id);
+        return [];
+    }
+
+    public function favorites(  ) {
+        $builder = \request()->user()->favoriteProducts();
+        //判断是否有提交search参数
+        if ($search = \request('search','')) {
+            $like = '%'.$search.'%';
+            $builder->where(function ($query) use ($like) {
+                $query->where('title', 'like', $like)
+                      ->orWhere('description', 'like', $like)
+                      ->orWhereHas('productSkus', function ($query) use ($like) {
+                          $query->where('title', 'like', $like)
+                                ->orWhere('description', 'like', $like);
+                      });
+            });
+        }
+        $products = $builder->paginate(3);
+        $filters = [ 'search' => $search];
+
+        return view('products.favorites',compact('products','filters'));
+    }
+
 
 
 }
