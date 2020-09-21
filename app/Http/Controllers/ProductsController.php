@@ -66,6 +66,12 @@ class ProductsController extends Controller
     public function show($id)
     {
         //
+        $product = Product::query()->with('productSkus')->find($id);
+        if (! $product->on_sale){
+            throw new \Exception('商品未上架');
+        }
+
+        return view('products.show',compact('product'));
     }
 
 

@@ -36,11 +36,13 @@
 
               <div class="col-3 product-item">
                 <div class="product-content">
-                  <div class="top">
-                    <div class="img"><img src="{{ asset("storage/$product->image") }}" alt=""></div>
-                    <div class="price"><b>￥</b>{{ $product->price }}</div>
-                    <div class="title">{{ $product->title }}</div>
-                  </div>
+                  <a href="{{ route('products.show',['product'=>$product->id]) }}">
+                    <div class="top">
+                      <div class="img"><img src="{{ asset("storage/$product->image") }}" alt=""></div>
+                      <div class="price"><b>￥</b>{{ $product->price }}</div>
+                      <div class="title">{{ $product->title }}</div>
+                    </div>
+                  </a>
                   <div class="bottom">
                     <div class="sold_count">销量 <span>{{ $product->sold_count }}笔</span></div>
                     <div class="review_count">浏览 <span>{{ $product->view_count }}</span></div>
