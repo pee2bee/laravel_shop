@@ -6,7 +6,7 @@
   <div class="row">
     <div class="col-lg-10 offset-lg-1">
       <div class="card">
-        <div class="card-header"></div>
+        <div class="card-header">我的收藏 - 共{{ $total }}条</div>
         <div class="card-body">
           <!-- 筛选组件开始 -->
           <form action="{{ route('products.favorites') }}" class="search-form">

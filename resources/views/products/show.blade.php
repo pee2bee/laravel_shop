@@ -35,7 +35,7 @@
                   @endforeach
                 </div>
               </div>
-              <div class="cart_amount"><label>数量</label><input type="text" class="form-control form-control-sm" value="1"><span>件</span><span class="stock"></span></div>
+              <div class="cart_amount"><label>数量</label><input type="text" name="amount" class="form-control form-control-sm" value="1"><span>件</span><span class="stock"></span></div>
               <div class="buttons">
                 @if($favored)
                   <button class="btn btn-danger btn-disfavor">取消收藏</button>
@@ -116,6 +116,37 @@
                           swal('系统错误','','error')
                       }
                   })
+          })
+
+          //监听加入购物车按钮
+          $('.btn-add-to-cart').click(function () {
+              axios.post('{{ route('cart.store') }}',{
+                  product_sku_id: $('input[name=skus]').val(),
+                  amount: $('input[name=amount]').val()
+              })
+              .then(function () {
+                  swal('加入购物车成功','','success')
+                  location.href = '{{ route('cart.index') }}'
+              },function (error) {
+                  if (error.response.status === 401) {
+                      swal('请先登录','','error')
+                  }else if (error.response.status === 422) {
+
+                      // http 状态码为 422 代表用户输入校验失败
+                      var html = '<div>';
+                      _.each(error.response.data.errors, function (errors) {
+                          _.each(errors, function (error) {
+                              html += error+'<br>';
+                          })
+                      });
+                      html += '</div>';
+                      swal({content: $(html)[0], icon: 'error'})
+                  } else {
+
+                      // 其他情况应该是系统挂了
+                      swal('系统错误', '', 'error');
+                  }
+              })
           })
       });
   </script>

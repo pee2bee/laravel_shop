@@ -20,17 +20,24 @@ Auth::routes(['verify' => true]);
 
 /*需要auth认证的路由*/
 Route::group(['middleware'=>['auth', 'verified']],function () {
-    /*地址相关路由*/
-   Route::get('addresses','AddressesController@index')->name('addresses.index');
-   Route::get('addresses/create','AddressesController@create')->name('addresses.create');
-   Route::post('addresses','AddressesController@store')->name('addresses.store');
-   Route::delete('addresses/{address}','AddressesController@destroy')->name('addresses.destroy');
-   Route::get('addresses/{address}','AddressesController@edit')->name('addresses.edit');
-   Route::patch('addresses/{address}','AddressesController@update')->name('addresses.update');
 
-   Route::post('products/{product}/favorite','ProductsController@favor')->name('products.favor');
-   Route::delete('products/{product}/favorite','ProductsController@disfavor')->name('products.disfavor');
-   Route::get('products/favorites','ProductsController@favorites')->name('products.favorites');
+    //用户地址
+    Route::get('addresses','AddressesController@index')->name('addresses.index');
+    Route::get('addresses/create','AddressesController@create')->name('addresses.create');
+    Route::post('addresses','AddressesController@store')->name('addresses.store');
+    Route::delete('addresses/{address}','AddressesController@destroy')->name('addresses.destroy');
+    Route::get('addresses/{address}','AddressesController@edit')->name('addresses.edit');
+    Route::patch('addresses/{address}','AddressesController@update')->name('addresses.update');
+
+    //收藏
+    Route::post('products/{product}/favorite','ProductsController@favor')->name('products.favor');
+    Route::delete('products/{product}/favorite','ProductsController@disfavor')->name('products.disfavor');
+    Route::get('products/favorites','ProductsController@favorites')->name('products.favorites');
+
+    //购物车
+    Route::get('cartItems', 'CartItemsController@index')->name('cart.index');
+    Route::post('cartItems', 'CartItemsController@store')->name('cart.store');
+    Route::delete('cartItems/{cartItem}','CartItemsController@destroy')->name('cart.destroy');
 });
 
 /*不需要auth认证的路由*/

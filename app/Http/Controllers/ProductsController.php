@@ -18,7 +18,8 @@ class ProductsController extends Controller
     {
         //创建一个查询构造器
         $builder = Product::query()->where('on_sale','=',1);
-        /*判断是否有提交search参数*/
+        //判断是否有提交search参数
+        //这里使用匿名函数来构建子查询 是为了用括号把子查询的条件包起来，不然会查错
         if ($search = \request('search','')) {
             $like = '%'.$search.'%';
             $builder->where(function ($query) use ($like) {
@@ -53,18 +54,12 @@ class ProductsController extends Controller
         return view('products.index',compact('products','filters'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
 
     /**
-     * Display the specified resource.
+     * @param $id
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws InvalidRequestException
      */
     public function show($id)
     {
@@ -80,6 +75,7 @@ class ProductsController extends Controller
         if ($user) {
             //boolval()把值转化成Boolean格式
             $favored = boolval($user->favoriteProducts()->find($product->id));
+
         }
 
         return view('products.show',compact('product','favored'));
@@ -127,10 +123,8 @@ class ProductsController extends Controller
         }
         $products = $builder->paginate(3);
         $filters = [ 'search' => $search];
+        $total = \request()->user()->favoriteProducts()->count();
 
-        return view('products.favorites',compact('products','filters'));
+        return view('products.favorites',compact('products','filters','total'));
     }
-
-
-
 }
