@@ -20,7 +20,7 @@
           </thead>
           <tbody class="product_list">
           @foreach($cartItems as $item)
-            <tr data-id="{{ $item->id }}">
+            <tr data-id="{{ $item->product_sku_id }}">
               <td>
                 <input type="checkbox" name="select" value="{{ $item->productSku->id }}" {{ $item->productSku->product->on_sale ? 'checked' : 'disabled' }}>
               </td>
@@ -51,6 +51,30 @@
           @endforeach
           </tbody>
         </table>
+
+        <form class="form-horizontal" role="form" id="order-form">
+          <div class="form-group row">
+            <label class="col-form-label col-sm-3 text-md-right">选择收货地址</label>
+            <div class="col-sm-9 col-md-7">
+              <select class="form-control" name="address">
+                @foreach($addresses as $address)
+                  <option value="{{ $address->id }}">{{ $address->full_address }} {{ $address->contact_name }} {{ $address->contact_phone }}</option>
+                @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-form-label col-sm-3 text-md-right">备注</label>
+            <div class="col-sm-9 col-md-7">
+              <textarea name="remark" class="form-control" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="offset-sm-3 col-sm-3">
+              <button type="button" class="btn btn-primary btn-create-order">提交订单</button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -95,6 +119,58 @@
                 $(this).prop('checked', checked);
             });
         });
+
+        //监听创建订单按钮
+        $('.btn-create-order').click(function () {
+            //构建请求参数，将用户地址和备注内容写入参数
+            var data = {
+                address_id: $('form select[name=address]').val(),
+                items: [],
+                remark: $('textarea[name=remark]').val(),
+            }
+            //遍历table中的所有tr data-id,取到sku id
+            $('table tr[data-id]').each(function () {
+                //获取当前行的单选框
+                var checkbox = $(this).find('input[type=checkbox][name=select]');
+                //如果单选框没有被选中或者被禁用，就直接返回
+                if (checkbox.prop('disable') || !checkbox.prop('checked')){
+                  return;
+                }
+                //获取当前输入数量
+                var input = $(this).find('input[name=amount]');
+                //如果数量为0 或者不是数字，也返回
+                //isNan() is not a number
+                if (input.val() === 0 || isNaN(input.val())){
+                    return;
+                }
+                //把sku的数量和id存入到请求数据中
+                data.items.push({
+                    id: $(this).data('id'),
+                    amount: input.val(),
+                })
+            })
+
+            //发送请求
+            axios.post('{{ route('orders.store') }}', data)
+                .then(function (response) {
+                    swal('订单提交成功','','success')
+                },function (error) {
+                    if (error.response.status === 422) {
+                        // http 状态码为 422 代表用户输入校验失败
+                        var html = '<div>';
+                        _.each(error.response.data.errors, function (errors) {
+                            _.each(errors, function (error) {
+                                html += error+'<br>';
+                            })
+                        });
+                        html += '</div>';
+                        swal({content: $(html)[0], icon: 'error'})
+                    } else {
+                        // 其他情况应该是系统挂了
+                        swal('系统错误', '', 'error');
+                    }
+                })
+        })
     })
   </script>
 @stop

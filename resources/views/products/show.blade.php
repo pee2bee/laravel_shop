@@ -30,7 +30,7 @@
                       data-toggle="tooltip"
                       title="{{ $sku->description }}"
                       data-placement="bottom">
-                      <input type="radio" name="skus" autocomplete="off" value="{{ $sku->id }}"> {{ $sku->title }}
+                      <input type="radio" name="skus" autocomplete="off" value="{{ $sku->id }}"> {{ $sku->title .$sku->id}}
                     </label>
                   @endforeach
                 </div>
@@ -120,8 +120,12 @@
 
           //监听加入购物车按钮
           $('.btn-add-to-cart').click(function () {
+              if ($('label.active input[name=skus]').length <= 0 ){
+                  swal('请选择要购买的商品','','error')
+                  return;
+              }
               axios.post('{{ route('cart.store') }}',{
-                  product_sku_id: $('input[name=skus]').val(),
+                  product_sku_id: $('label.active input[name=skus]').val(),
                   amount: $('input[name=amount]').val()
               })
               .then(function () {

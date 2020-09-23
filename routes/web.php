@@ -38,6 +38,9 @@ Route::group(['middleware'=>['auth', 'verified']],function () {
     Route::get('cartItems', 'CartItemsController@index')->name('cart.index');
     Route::post('cartItems', 'CartItemsController@store')->name('cart.store');
     Route::delete('cartItems/{cartItem}','CartItemsController@destroy')->name('cart.destroy');
+
+    //下订单
+    Route::post('orders', 'OrdersController@store')->name('orders.store');
 });
 
 /*不需要auth认证的路由*/

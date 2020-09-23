@@ -18,18 +18,10 @@ class CartItemsController extends Controller
         //
         $user = \request()->user();
         $cartItems = $user->cartItems()->with('productSku')->get();
-        return view('users.cart', compact('cartItems'));
+        $addresses = $user->addresses()->orderBy('last_used_at','desc')->get();
+        return view('users.cart', compact('cartItems','addresses'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -59,11 +51,6 @@ class CartItemsController extends Controller
 
         return [];
     }
-
-
-
-
-
 
     /**
      * Remove the specified resource from storage.

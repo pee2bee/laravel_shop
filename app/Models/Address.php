@@ -5,6 +5,46 @@ namespace App\Models;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Address
+ *
+ * @property int $id
+ * @property int $user_id 用户id
+ * @property int|null $province_code 省id
+ * @property string|null $province_name 省
+ * @property int|null $city_code 市id
+ * @property string|null $city_name 市
+ * @property int|null $district_code 区id
+ * @property string|null $district_name 区
+ * @property string|null $strict 街道
+ * @property string|null $zipcode 邮编
+ * @property string $contact_name 收件人
+ * @property string $contact_phone 手机
+ * @property string|null $last_used_at 最后使用时间
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read mixed $full_address
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Address newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCityCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCityName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereContactName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereContactPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereDistrictCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereDistrictName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereLastUsedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereProvinceCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereProvinceName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereStrict($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereZipcode($value)
+ * @mixin \Eloquent
+ */
 class Address extends Model
 {
     /**
@@ -30,4 +70,7 @@ class Address extends Model
     protected $fillable = [
       'province_name', 'city_name', 'district_name', 'province_code', 'city_code', 'district_code','strict', 'contact_name', 'contact_phone'
     ];
+
+
+
 }
