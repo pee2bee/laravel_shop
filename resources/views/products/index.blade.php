@@ -13,8 +13,11 @@
             <div class="form-row">
               <div class="col-md-9">
                 <div class="form-row">
-                  <div class="col-auto"><input type="text" class="form-control form-control-sm" name="search" placeholder="搜索"></div>
-                  <div class="col-auto"><button class="btn btn-primary btn-sm">搜索</button></div>
+                  <div class="col-auto"><input type="text" class="form-control form-control-sm" name="search"
+                                               placeholder="搜索"></div>
+                  <div class="col-auto">
+                    <button class="btn btn-primary btn-sm">搜索</button>
+                  </div>
                 </div>
               </div>
               <div class="col-md-3">
@@ -62,22 +65,21 @@
 
 @section('js')
   <script>
-    var filters = {!! json_encode($filters) !!}
-    $(document).ready(function () {
-        //保留用户搜索和排序条件
-        $('.search-form input[name=search]').val(filters.search)
-        $('.search-form select[name=order]').val(filters.order)
+      var filters = {!! json_encode($filters) !!}
+      $(document).ready(function () {
+          //保留用户搜索和排序条件
+          $('.search-form input[name=search]').val(filters.search)
+          $('.search-form select[name=order]').val(filters.order)
 
-        //按钮点击提交表单
-        $('.search-form button').click(function () {
-            $('.search-form').submit()
-        })
+          //按钮点击提交表单
+          $('.search-form button').click(function () {
+              $('.search-form').submit()
+          })
 
-        /*监听排序栏，改变就提交*/
-        $('.search-form select[name=order]').on('change',function () {
-            $('.search-form').submit()
-        })
-    })
+          /*监听排序栏，改变就提交*/
+          $('.search-form select[name=order]').on('change', function () {
+              $('.search-form').submit()
+          })
+      })
   </script>
-
 @stop

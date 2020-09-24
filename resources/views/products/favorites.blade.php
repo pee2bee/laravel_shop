@@ -13,11 +13,13 @@
             <div class="form-row">
               <div class="col-md-9">
                 <div class="form-row">
-                  <div class="col-auto"><input type="text" class="form-control form-control-sm" name="search" placeholder="搜索"></div>
-                  <div class="col-auto"><button class="btn btn-primary btn-sm">搜索</button></div>
+                  <div class="col-auto"><input type="text" class="form-control form-control-sm" name="search"
+                                               placeholder="搜索"></div>
+                  <div class="col-auto">
+                    <button class="btn btn-primary btn-sm">搜索</button>
+                  </div>
                 </div>
               </div>
-
             </div>
           </form>
           <!-- 筛选组件结束 -->
@@ -61,9 +63,6 @@
           $('.search-form button').click(function () {
               $('.search-form').submit()
           })
-
-
       })
   </script>
-
 @stop
