@@ -33,11 +33,12 @@ class CloseOrder implements ShouldQueue {
      * @return void
      */
     public function handle() {
-        //
+        //已支付
         if ( $this->order->paid_at ) {
             return;
         }
 
+        //未支付
         //通过事务执行sql
         \DB::transaction( function () {
             //关闭订单
