@@ -20,7 +20,7 @@ class OrdersController extends Controller {
     public function index() {
         //
         $user   = \request()->user();
-        $orders = $user->orders()->with( 'items.product', 'items.productSku' )->paginate(10);
+        $orders = $user->orders()->with( 'items.product', 'items.productSku' )->paginate( 10 );
 
         return view( 'users.order', compact( 'orders' ) );
     }
@@ -113,6 +113,13 @@ class OrdersController extends Controller {
      */
     public function show( $id ) {
         //
+
+        $order = Order::query()->with( 'items.product', 'items.productSku' )->find( $id );
+        //权限判断
+        $this->authorize( 'own', $order );
+
+        return view( 'users.order_show', compact( 'order' ) );
+
     }
 
     /**
