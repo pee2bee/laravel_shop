@@ -34,8 +34,7 @@ class UpdateProductSoldCount {
         foreach ( $order->items as $item ) {
             $product = $item->product;
             //计算商品对应的销量,把当前订单条的销量加到商品销量中
-            $product->sold_count += $item->amount;
-            $product->save();
+            $product->increment( 'sold_count', $item->amount );
         }
     }
 }
