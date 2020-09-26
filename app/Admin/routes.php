@@ -45,4 +45,5 @@ Route::group( [
         'update'  => 'admin.orders.update',
         'destroy' => 'admin.orders.destroy'
     ] );
+    $router->post( 'orders/{order}/ship', 'OrdersController@ship' )->name( 'admin.orders.ship' );
 } );
