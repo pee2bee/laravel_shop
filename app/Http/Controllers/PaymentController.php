@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderPaid;
 use App\Exceptions\InvalidRequestException;
 use App\Models\Order;
 use Carbon\Carbon;
@@ -25,7 +26,7 @@ class PaymentController extends Controller {
         ] );
     }
 
-    //支付宝支付后前端返回
+    //支付宝支付后前端返回，不涉及是否确实已支付的判断
     public function alipayReturn() {
         //校验提交的参数是否合法，返回检校后的参数
         try {
@@ -37,7 +38,6 @@ class PaymentController extends Controller {
         }
 
         return view( 'pages.success', [ 'msg' => '付款成功' ] );
-
     }
 
     //支付宝服务端回调
@@ -82,7 +82,14 @@ class PaymentController extends Controller {
             'payment_no'     => $data->trade_no //支付宝订单号
         ] );
 
+        //广播已支付的事件
+        $this->afterPaid( $order );
+
         //返回success字段给支付宝,就是返回 'success'字符串
         return app( 'alipay' )->success();
+    }
+
+    public function afterPaid( $order ) {
+        event( new OrderPaid( $order ) );
     }
 }
