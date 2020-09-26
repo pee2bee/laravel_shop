@@ -71,37 +71,20 @@ class OrdersController extends Controller {
 
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function edit( $id ) {
-        //
+    public function received( Order $order, Request $request ) {
+        //校验权限
+        $this->authorize( 'own', $order );
+        //判断订单是否为已发货
+        if ( $order->ship_status != Order::SHIP_STATUS_DELIVERED ) {
+            throw new InvalidRequestException( '发货状态不正确' );
+        }
+
+        //更新发货状态为已收到
+        $order->update( [ 'ship_status' => Order::SHIP_STATUS_RECEIVED ] );
+
+        //返回
+        return '';
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function update( Request $request, $id ) {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy( $id ) {
-        //
-    }
 }

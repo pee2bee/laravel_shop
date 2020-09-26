@@ -62,6 +62,31 @@
                 </div>
                 <div class="line-value">{{ $order->no }}</div>
               </div>
+              {{--物流信息，已支付的展示物流信息--}}
+              @if($order->paid_at)
+
+                <div class="line">
+                  <div class="line-label">
+                    物流状态：
+                  </div>
+                  <div class="line-value">{{ \App\Models\Order::$shipStatusMap[$order->ship_status] }}</div>
+                </div>
+                {{--如果已发货或已收货，显示物流信息--}}
+                @if($order->ship_status != \App\Models\Order::SHIP_STATUS_PENDING)
+                  <div class="line">
+                    <div class="line-label">
+                      物流公司：
+                    </div>
+                    <div class="line-value">{{ $order->ship_data['express_company'] ?: '' }}</div>
+                  </div>
+                  <div class="line">
+                    <div class="line-label">
+                      物流单号：
+                    </div>
+                    <div class="line-value">{{ $order->ship_data['express_no'] ?: '' }}</div>
+                  </div>
+                @endif
+              @endif
             </div>
             <div class="order-summary text-right">
               <div class="total-amount">
@@ -92,11 +117,58 @@
                 </div>
               @endif
             <!-- 支付按钮结束 -->
+              @if($order->ship_status === \App\Models\Order::SHIP_STATUS_DELIVERED)
+                <div class="receive-button">
+                  <form method="post" action="{{ route('orders.received', [$order->id]) }}">
+                    <!-- csrf token 不能忘 -->
+                    {{ csrf_field() }}
+                    <button type="submit" class="btn btn-sm btn-success">确认收货</button>
+                  </form>
+                </div>
+              @endif
+
             </div>
+
           </div>
         </div>
 
       </div>
     </div>
   </div>
+@stop
+
+@section('js')
+  <script>
+      $(document).ready(function () {
+          $('.receive-button button[type=submit]').click(function () {
+              swal({
+                  title: '你确定要收货吗？',
+                  icon: 'warning',
+                  dangerMode: true,
+                  buttons: ['取消', '确认收货']
+              })
+                  .then(function (willDo) {
+                      if (!willDo) {
+                          return
+                      }
+                      //发送请求
+                      axios.post('{{ route('orders.received', [$order->id]) }}')
+                          .then(function () {
+                              //刷新页面
+                              location.reload()
+                          }, function (error) {
+                              if (error.response.status === 401) {
+                                  swal('请登录后再操作', '', 'error')
+                              } else if (error.response && (error.response.msg || error.response.messga)) {
+                                  //其他错误信息
+                                  swal(error.response.msg ? error.response.msg : error.response.message, '', 'error')
+                              } else {
+                                  //系统挂了
+                                  swal('系统错误', '', 'error')
+                              }
+                          })
+                  })
+          })
+      })
+  </script>
 @stop

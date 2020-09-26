@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 /*首页路由*/
-Route::redirect( '/', '/products' );
+Route::redirect( '/', '/products' )->name( 'root' );
 
 /*登录认证相关路由，开启邮箱验证路由*/
 Auth::routes( [ 'verify' => true ] );
@@ -44,12 +44,16 @@ Route::group( [ 'middleware' => [ 'auth', 'verified' ] ], function () {
     //用户订单列表
     Route::get( 'orders', 'OrdersController@index' )->name( 'orders.index' );
     //订单详情
-    Route::get( 'orders/{id}', 'OrdersController@show' )->name( 'orders.show' );
+    Route::get( 'orders/{order}', 'OrdersController@show' )->name( 'orders.show' );
+    //表注订单为已收货
+    Route::post( 'orders/{order}/received', 'OrdersController@received' )->name( 'orders.received' );
 
     //支付宝支付
     Route::get( 'payment/{order}/alipay', 'PaymentController@payByAlipay' )->name( 'payment.alipay' )->where( [ 'order' => '[0-9]+' ] );
     //支付后前端回调
     Route::get( 'payment/alipay/return', 'PaymentController@alipayReturn' )->name( 'payment.alipay.return' );
+
+
 } );
 
 /*不需要auth认证的路由*/

@@ -15891,6 +15891,11 @@ a.text-dark:focus {
   padding-right: 10px;
 }
 
+.orders-show-page .receive-button {
+  margin-top: 10px;
+  padding-right: 10px;
+}
+
 /* header */
 
 .navbar-static-top {
