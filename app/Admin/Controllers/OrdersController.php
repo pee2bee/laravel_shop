@@ -70,7 +70,7 @@ class OrdersController extends AdminController {
     public function show( $id, Content $content ) {
         return $content
             ->header( '查看订单' )
-            // body 方法可以接受 Laravel 的视图作为参数
+            // body 方法可以接受 Laravel 的视图作为参数,这样可以直接使用原有的布局框架，只是改变body
             ->body( view( 'admin.orders.show', [ 'order' => Order::find( $id ) ] ) );
     }
 

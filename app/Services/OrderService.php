@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use Symfony\Component\DomCrawler\AbstractUriElement;
 
 class OrderService {
+
     public function get() {
         $user = \Auth::user();
 

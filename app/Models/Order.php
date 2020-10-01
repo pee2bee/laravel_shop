@@ -54,17 +54,18 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Order extends Model {
     //
-    use DefaultDatetimeFormat;
-    const REFUND_STATUS_PENDING = 'pending';
-    const REFUND_STATUS_APPLIED = 'applied';
-    const REFUND_STATUS_PROCESSING = 'processing';
-    const REFUND_STATUS_SUCCESS = 'success';
-    const REFUND_STATUS_FAILED = 'failed';
-
-    const SHIP_STATUS_PENDING = 'pending';
-    const SHIP_STATUS_DELIVERED = 'delivered';
-    const SHIP_STATUS_RECEIVED = 'received';
-
+    use DefaultDatetimeFormat;//格式化时间 trait
+    //定义常量，退款状态
+    const REFUND_STATUS_PENDING = 'pending';//未决的，未申请退款
+    const REFUND_STATUS_APPLIED = 'applied';//已应用，申请了退款
+    const REFUND_STATUS_PROCESSING = 'processing';//退款中
+    const REFUND_STATUS_SUCCESS = 'success';//退款成功
+    const REFUND_STATUS_FAILED = 'failed';//退款失败
+    //定义常量，物流状态
+    const SHIP_STATUS_PENDING = 'pending';//未决的，未发物流
+    const SHIP_STATUS_DELIVERED = 'delivered';//邮递中
+    const SHIP_STATUS_RECEIVED = 'received';//已接收，已签收
+    //常量映射对应的值
     public static $refundStatusMap = [
         self::REFUND_STATUS_PENDING    => '未退款',
         self::REFUND_STATUS_APPLIED    => '已申请退款',
@@ -79,6 +80,7 @@ class Order extends Model {
         self::SHIP_STATUS_RECEIVED  => '已收货',
     ];
 
+    //可批量填充的字段
     protected $fillable = [
         'no',
         'address',
@@ -105,10 +107,12 @@ class Order extends Model {
         'extra'     => 'json',
     ];
 
+    //指定时间类型，会格式化成Carbo对象，像created_at 和 updated_at 一样
     protected $dates = [
         'paid_at',
     ];
 
+    //重写模型的boot方法
     protected static function boot() {
         parent::boot();
         // 监听模型创建事件，在写入数据库之前触发
@@ -125,14 +129,17 @@ class Order extends Model {
         } );
     }
 
+    //关联模型user
     public function user() {
         return $this->belongsTo( User::class );
     }
 
+    //关联模型orderItem
     public function items() {
         return $this->hasMany( OrderItem::class );
     }
 
+    //创建订单号，如果订单号已存在就记录错误终止创建订单
     public static function findAvailableNo() {
         // 订单流水号前缀
         $prefix = date( 'YmdHis' );

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\OrderRequest;
+use App\Http\Requests\SendReviewRequest;
 use App\Jobs\CloseOrder;
 use App\Models\Address;
 use App\Models\Order;
@@ -13,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class OrdersController extends Controller {
+
     protected $order_service;
 
     public function __construct( OrderService $order_service ) {
@@ -86,5 +88,54 @@ class OrdersController extends Controller {
         return '';
     }
 
+    //展示评价页面
+    public function review( Order $order ) {
+        //校验权限
+        $this->authorize( 'own', $order );
+        //判断是否已支付
+        if ( ! $order->paid_at ) {
+            throw new InvalidRequestException( '订单未支付，不能进行评价' );
+        }
+        //预加载关联
+        $order->load( 'items.product', 'items.productSku' );
+
+        return view( 'users.order.review', compact( 'order' ) );
+    }
+
+    public function sendReview( Order $order, SendReviewRequest $request ) {
+
+        //校验权限
+        $this->authorize( 'own', $order );
+        //判断是否已支付
+        if ( ! $order->paid_at ) {
+            throw new InvalidRequestException( '订单未支付，不可以评价' );
+        }
+
+        //判断是否已进行过评价
+        if ( $order->reviewed ) {
+            throw new InvalidRequestException( '该订单已评价，不可重复提交' );
+        }
+
+        //获取评价数组
+        $reviews = $request->reviews;
+        //开启事务
+        \DB::transaction( function () use ( $reviews, $order ) {
+            //遍历reviews 数组
+            foreach ( $reviews as $key => $review ) {
+                //获取关联的orderItem
+                $orderItem = $order->items()->find( $review['id'] );
+
+                //保存评分和评价
+                $orderItem->update( [
+                    'rating' => $review['rating'],
+                    'review' => $review['review']
+                ] );
+            }
+            //将订单标记为已评价
+            $order->update( [ 'reviewed' => true ] );
+        } );
+
+        return redirect()->back();
+    }
 
 }

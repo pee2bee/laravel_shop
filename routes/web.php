@@ -47,6 +47,10 @@ Route::group( [ 'middleware' => [ 'auth', 'verified' ] ], function () {
     Route::get( 'orders/{order}', 'OrdersController@show' )->name( 'orders.show' );
     //表注订单为已收货
     Route::post( 'orders/{order}/received', 'OrdersController@received' )->name( 'orders.received' );
+    //订单评价视图
+    Route::get( 'orders/{order}/review', 'OrdersController@review' )->name( 'orders.review.show' );
+    //订单评价保存
+    Route::post( 'orders/{order}/review', 'OrdersController@reviewed' )->name( 'orders.review.store' );
 
     //支付宝支付
     Route::get( 'payment/{order}/alipay', 'PaymentController@payByAlipay' )->name( 'payment.alipay' )->where( [ 'order' => '[0-9]+' ] );
