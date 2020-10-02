@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderReviewed;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\OrderRequest;
 use App\Http\Requests\SendReviewRequest;
@@ -134,6 +135,9 @@ class OrdersController extends Controller {
             //将订单标记为已评价
             $order->update( [ 'reviewed' => true ] );
         } );
+
+        //发送已评价事件
+        event( new OrderReviewed( $order ) );
 
         return redirect()->back();
     }

@@ -19,7 +19,7 @@ $factory->define(Product::class, function (Faker $faker) {
         'on_sale'      => true,
         'rating'       => $faker->numberBetween(0, 5),
         'sold_count'   => 0,
-        'view_count' => 0,
+        'review_count' => 0,
         'price'        => 0,
     ];
 
