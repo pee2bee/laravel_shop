@@ -7,7 +7,9 @@ use App\Models\OrderItem;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class UpdateProductRating {
+//继承ShouldQueue就说明这个事件处理是异步的，要启用队列
+//php artisan queue:work
+class UpdateProductRating implements ShouldQueue {
     /**
      * Create the event listener.
      *
