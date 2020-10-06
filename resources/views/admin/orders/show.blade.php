@@ -44,11 +44,24 @@
         <td>订单金额：</td>
         <td colspan="3">￥{{ $order->total_amount }}</td>
       </tr>
-      {{--已支付才显示物流--}}
+      {{--已支付才显示物流和退款信息--}}
       @if($order->paid_at)
         <tr>
           <td>发货状态：</td>
           <td>{{ \App\Models\Order::$shipStatusMap[$order->ship_status] }}</td>
+        </tr>
+        <tr>
+          <td>退款状态:</td>
+          <td>{{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}
+            退款理由： {{ $order->extra['refund_reason'] }}</td>
+          {{--如果已申请退款,展示同意或拒绝退款按钮--}}
+          @if($order->refund_status === \App\Models\Order::REFUND_STATUS_APPLIED)
+            <td>
+              <button class="btn btn-sm btn-success" id="btn-refund-agree">同意</button>
+              <button class="btn btn-sm btn-danger" id="btn-refund-disagree">不同意</button>
+            </td>
+            <td></td>
+          @endif
         </tr>
         {{--如果未发货，显示发货表单，输入物流信息--}}
         @if($order->ship_status === \App\Models\Order::SHIP_STATUS_PENDING)
@@ -81,6 +94,7 @@
               </form>
             </td>
           </tr>
+
         @else
           {{--已发货，展示物流信息--}}
           <tr>
@@ -90,8 +104,93 @@
             <td>{{ $order->ship_data['express_no'] }}</td>
           </tr>
         @endif
+
       @endif
       </tbody>
     </table>
   </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#btn-refund-disagree').click(function () {
+            // Laravel-Admin 使用的 SweetAlert 版本与我们在前台使用的版本不一样，因此参数也不太一样
+            swal({
+                title: '输入拒绝退款理由',
+                input: 'text',
+                showCancelButton: true,
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                showLoaderOnConfirm: true,
+                preConfirm: function (inputValue) {
+                    if (!inputValue) {
+                        swal('理由不能为空', '', 'error')
+                        return false;
+                    }
+                    // Laravel-Admin 没有 axios，使用 jQuery 的 ajax 方法来请求
+                    return $.ajax({
+                        url: '{{ route('admin.orders.disagree_refund', [$order->id]) }}',
+                        type: 'POST',
+                        data: JSON.stringify({   // 将请求变成 JSON 字符串
+                            agree: false,  // 拒绝申请
+                            reason: inputValue,
+                            // 带上 CSRF Token
+                            // Laravel-Admin 页面里可以通过 LA.token 获得 CSRF Token
+                            _token: LA.token,
+                        }),
+                        contentType: 'application/json',  // 请求的数据格式为 JSON
+                    });
+                },
+                allowOutsideClick: false
+            }).then(function (ret) {
+                // 如果用户点击了『取消』按钮，则不做任何操作
+                if (ret.dismiss === 'cancel') {
+                    return;
+                }
+                swal({
+                    title: '操作成功',
+                    type: 'success'
+                }).then(function () {
+                    // 用户点击 swal 上的按钮时刷新页面
+                    location.reload();
+                });
+            });
+        });
+        $('#btn-refund-agree').click(function () {
+            swal({
+                title: "同意退款，资金会直接退回给用户",
+                confirmButtonText: "确认",
+                cancelButtonText: "取消",
+                showCancelButton: true,
+                preConfirm: function () {
+
+                    // Laravel-Admin 没有 axios，使用 jQuery 的 ajax 方法来请求
+                    return $.ajax({
+                        url: '{{ route('admin.orders.agree_refund', [$order->id]) }}',
+                        type: 'POST',
+                        data: JSON.stringify({   // 将请求变成 JSON 字符串
+                            // 带上 CSRF Token
+                            // Laravel-Admin 页面里可以通过 LA.token 获得 CSRF Token
+                            _token: LA.token,
+                        }),
+                        contentType: 'application/json',  // 请求的数据格式为 JSON
+                    });
+                },
+            }).then(function (ret) {
+                // 如果用户点击了『取消』按钮，则不做任何操作
+                if (ret.dismiss === 'cancel') {
+                    return;
+                }
+                swal({
+                    title: '操作成功',
+                    type: 'success'
+                }).then(function () {
+                    // 用户点击 swal 上的按钮时刷新页面
+                    location.reload();
+                });
+            });
+        })
+    })
+
+
+</script>

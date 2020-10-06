@@ -19,8 +19,6 @@ class AppServiceProvider extends ServiceProvider {
             //判断当前环境，如果不是生产环境就设成开发模式
             if ( app()->environment() !== 'production' ) {
                 $config['mode']         = 'dev';
-                $config['notify_url']   = 'http://requestbin.net/r/1ez2hsr1';
-                $config['return_url']   = route( 'payment.alipay.return' );
                 $config['log']['level'] = Logger::DEBUG;
             } else {
                 $config['log']['level'] = Logger::WARNING;

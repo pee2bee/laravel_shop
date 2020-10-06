@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Exceptions\InvalidRequestException;
+use App\Http\Requests\Admin\DisagreeRefundRequest;
 use App\Http\Requests\Request;
 use App\Models\Order;
 use Carbon\Carbon;
@@ -11,10 +12,11 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class OrdersController extends AdminController {
-    use ValidatesRequests;
+    use ValidatesRequests, AuthorizesRequests;
     /**
      * Title for current resource.
      *
@@ -129,6 +131,36 @@ class OrdersController extends AdminController {
 
         //返回上一页
         return redirect()->back();
+    }
 
+    public function agreeRefund( Order $order ) {
+
+        //权限验证 留空
+        /*$this->authorize('', $order);*/
+        if ( $order->refund_status != Order::REFUND_STATUS_APPLIED ) {
+            throw new InvalidRequestException( '退款状态不正确' );
+        }
+        $order->refund_status = Order::REFUND_STATUS_PROCESSING;
+        $order->save();
+        //下面是资金操作
+    }
+
+    public function disagreeRefund( Order $order, DisagreeRefundRequest $request ) {
+
+        //权限判断，留空
+
+        if ( $order->refund_status != Order::REFUND_STATUS_APPLIED ) {
+            throw new InvalidRequestException( '退款状态不正确' );
+        }
+
+        //修改订单状态为未退款
+        $order->refund_status = Order::REFUND_STATUS_PENDING;
+        //保存退款信息到extra
+        $extra                           = $order->extra ?: [];
+        $extra['refund_disagree_reason'] = $request->reason;
+        $order->extra                    = $extra;
+        $order->save();
+
+        return $order;
     }
 }

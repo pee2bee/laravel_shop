@@ -64,7 +64,7 @@ class PaymentController extends Controller {
         // 如果订单状态不是成功或者结束，则不走后续的逻辑
         // 所有交易状态：https://docs.open.alipay.com/59/103672
 
-        //判断交易状态,如果交易关闭的TRADE_CLOSED，直接返回成功success字段给支付宝，这样支付宝就不会再发通知过来
+        //判断交易状态,如果交易关闭 TRADE_CLOSED，直接返回成功success字段给支付宝，这样支付宝就不会再发通知过来
         if ( ! in_array( $data->trade_status, [ 'TRADE_SUCCESS', 'TRADE_FINISHED' ] ) ) {
             return app( 'alipay' )->success();
         }

@@ -111,7 +111,7 @@
                     @if($order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
                       已支付
                     @else
-                      {{ \App\Models\Order::$refundStatusMap($order->refund_status) }}
+                      {{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}
                     @endif
                   @elseif($order->close)
                     已关闭
@@ -202,7 +202,7 @@
                       return;
                   }
                   // 请求退款接口
-                  axios.post('{{ route('orders.apply_refund', [$order->id]) }}', {reason: input})
+                  axios.post('{{ route('orders.refund.apply', [$order->id]) }}', {reason: input})
                       .then(function () {
                           swal('申请退款成功', '', 'success').then(function () {
                               // 用户点击弹框上按钮时重新加载页面

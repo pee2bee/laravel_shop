@@ -46,4 +46,7 @@ Route::group( [
         'destroy' => 'admin.orders.destroy'
     ] );
     $router->post( 'orders/{order}/ship', 'OrdersController@ship' )->name( 'admin.orders.ship' );
+    $router->post( 'orders/{order}/agreeRefund', 'OrdersController@agreeRefund' )->name( 'admin.orders.agree_refund' );
+    $router->post( 'orders/{order}/disagreeRefund', 'OrdersController@disagreeRefund' )->name( 'admin.orders.disagree_refund' );
+
 } );

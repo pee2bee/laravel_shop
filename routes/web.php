@@ -66,10 +66,10 @@ Route::group( [ 'middleware' => [ 'auth', 'verified' ] ], function () {
 Route::get( 'products', 'ProductsController@index' )->name( 'products.index' );
 Route::get( 'products/{product}', 'ProductsController@show' )->name( 'products.show' )->where( [ 'product' => '[0-9]+' ] );
 
-//支付宝支付后回调通知地址
-//需要忽略csrf
-Route::post( 'payment/alipay/notify', 'PaymentController@alipayNotify' )->name( 'payment.alipay.notify' );
 
+//支付后通知回调，支付宝自动向该路由发起请求
+//需要忽略csrf验证
+Route::post( 'payment/alipay/notify', 'PaymentController@alipayNotify' )->name( 'payment.alipay.notify' );
 
 
 

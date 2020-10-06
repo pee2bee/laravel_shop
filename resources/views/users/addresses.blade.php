@@ -75,7 +75,6 @@
                           location.reload()
                       })
                   })
-
               })
           })
       })

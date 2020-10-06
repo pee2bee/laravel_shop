@@ -57,13 +57,13 @@
                                 @if($order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
                                   已支付
                                 @else
-                                  {{ \App\Models\Order::$refundStatusMap($order->refund_status) }}
+                                  {{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}
                                 @endif
-                              @elseif($order->close)
+                              @elseif($order->closed)
                                 已关闭
                               @else
                                 未支付 <br>
-                                请于 {{ $order->created_at->addSeconds(config('app.order_ttl'))->format('H:i') }}前完成支付
+                                请于 {{ $order->created_at->addSeconds(config('app.order_ttl'))->format('d号 H:i') }}前完成支付
                                 <br>
                                 否则订单自动关闭
                               @endif
