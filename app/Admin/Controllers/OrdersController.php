@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Exceptions\InternalException;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\Admin\DisagreeRefundRequest;
 use App\Http\Requests\Request;
@@ -140,9 +141,47 @@ class OrdersController extends AdminController {
         if ( $order->refund_status != Order::REFUND_STATUS_APPLIED ) {
             throw new InvalidRequestException( '退款状态不正确' );
         }
-        $order->refund_status = Order::REFUND_STATUS_PROCESSING;
-        $order->save();
+
         //下面是资金操作
+        switch ( $order->payment_method ) {
+            case 'wechat':
+                //先留空
+                break;
+            case 'alipay':
+                //生成唯一退款单号，退款要求有一个唯一的单号标识
+                $refund_no = Order::createRefundNo();
+                //调用支付宝实例
+                $result = app( 'alipay' )->refund( [
+                    'out_trade_no'   => $order->no, //退款对应的订单流水号
+                    'refund_amount'  => $order->total_amount,//退款金额
+                    'out_request_no' => $refund_no//退款单号
+                ] );
+                //根据支付宝的文档，返回值中有sub_code就说明退款失败
+                if ( $result->sub_code ) {
+                    //将退款失败保存到extra
+                    $extra                       = $order->extra;
+                    $extra['refund_failed_code'] = $result->sub_code;
+                    $order->update( [
+                        'refund_no'     => $refund_no,
+                        'refund_status' => Order::REFUND_STATUS_FAILED,
+                        'extra'         => $extra
+                    ] );
+                } else {
+                    //退款成功，更新退款状态，保存退款单号
+                    $order->update( [
+                        'refund_no'     => $refund_no,
+                        'refund_status' => Order::REFUND_STATUS_SUCCESS,
+                    ] );
+                }
+                break;
+            default:
+                //保持健壮性
+                throw new InternalException( '未知的支付方式' );
+                break;
+        }
+
+        return $order;
+
     }
 
     public function disagreeRefund( Order $order, DisagreeRefundRequest $request ) {

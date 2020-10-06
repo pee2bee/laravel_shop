@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Encore\Admin\Traits\DefaultDatetimeFormat;
 use Illuminate\Database\Eloquent\Model;
+use Ramsey\Uuid\Uuid;
 
 /**
  * App\Models\Order
@@ -154,5 +155,21 @@ class Order extends Model {
         \Log::warning( 'find order no failed' );
 
         return false;
+    }
+
+    //创建退款单号
+    public function createRefundNo() {
+        do {
+            // Uuid类可以用来生成大概率不重复的字符串
+            $no = Uuid::uuid4()->getHex();
+            //如果有重复的就继续生成
+        } while ( self::query()->where( 'refund_no', $no ) );
+
+        return $no;
+    }
+
+    //关联优惠券
+    public function coupon() {
+        return $this->belongsTo( Coupon::class );
     }
 }

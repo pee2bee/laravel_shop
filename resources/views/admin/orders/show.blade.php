@@ -25,7 +25,8 @@
       <tr>
         <td>收货地址</td>
         <td
-          colspan="3">{{ $order->address['address'] }} {{ $order->address['zipcode'] }} {{ $order->address['contact_name'] }} {{ $order->address['contact_phone'] }}</td>
+          colspan="3">{{ $order->address['address'] }} {{ $order->address['zipcode'] }}
+          {{ $order->address['contact_name'] }} {{ $order->address['contact_phone'] }}</td>
       </tr>
       <tr>
         <td rowspan="{{ $order->items->count() + 1 }}">商品列表</td>
@@ -63,8 +64,9 @@
             <td></td>
           @endif
         </tr>
-        {{--如果未发货，显示发货表单，输入物流信息--}}
-        @if($order->ship_status === \App\Models\Order::SHIP_STATUS_PENDING)
+        {{--如果未发货且未退款成功，显示发货表单，输入物流信息--}}
+        @if($order->ship_status === \App\Models\Order::SHIP_STATUS_PENDING
+        && $order->refund_status != \App\Models\Order::REFUND_STATUS_SUCCESS)
           <tr>
             <td colspan="4">
               <form action="{{ route('admin.orders.ship',[$order->id]) }}" method="post">
