@@ -12,6 +12,7 @@ namespace App\Services;
 
 use App\Exceptions\InvalidRequestException;
 use App\Models\Address;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\ProductSku;
 use App\Models\User;
@@ -26,10 +27,10 @@ class OrderService {
         return $orders = $user->orders()->with( 'items.product', 'items.productSku' )->paginate( 10 );
     }
 
-    public function store( User $user, Address $address, $remark, $items ) {
+    public function store( User $user, Address $address, $remark, $items, $coupon_code = null ) {
 
         //开启数据库事务
-        $order = \DB::transaction( function () use ( $user, $address, $remark, $items ) {
+        $order = \DB::transaction( function () use ( $user, $address, $remark, $items, $coupon_code ) {
 
             //更新地址的最后使用时间
             $address->update( [ 'last_used_at' => Carbon::now() ] );
@@ -71,6 +72,22 @@ class OrderService {
                     throw new InvalidRequestException( '该商品库存不足' );
                 }
             }
+
+
+            //检查优惠券是否在满减也可用,如果这里不通过则整个事务都会失败，前面创建的订单也就不会再存在
+            if ( $coupon_code ) {
+                //检查优惠券对该订单是否可用
+                //先更新订单总额,不然总额为0
+                $order->update( [ 'total_amount' => $totalAmount ] );
+                $coupon = Coupon::checkCodeValid( $coupon_code, $order );
+                //根据优惠券类型来计算金额
+                $totalAmount           = $coupon->countTotalAmount( $totalAmount );
+                $order->coupon_code_id = $coupon->id;//更新优惠券id到订单
+                //优惠券使用数量自增
+                $coupon->used ++;
+                $coupon->save();
+            }
+
             //更新订单总额
             $order->update( [ 'total_amount' => $totalAmount ] );
 

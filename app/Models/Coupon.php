@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Exceptions\InvalidRequestException;
+use Carbon\Carbon;
 use Encore\Admin\Traits\DefaultDatetimeFormat;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -72,5 +74,64 @@ class Coupon extends Model {
         }
 
         return $str;
+    }
+
+    //检查优惠券是否可用
+    public static function checkCodeValid( $code, Order $order = null ) {
+
+        //数据库中查询是否存在
+        if ( ! $coupon = self::query()->where( 'code', $code )->first() ) {
+            //不存在
+            throw new InvalidRequestException( '优惠券不存在', 404 );
+        }
+
+        //存在，判断是否启用
+        if ( ! $coupon->enabled ) {
+            throw new InvalidRequestException( '优惠券未启用', 403 );
+        }
+
+        //判断次数是否用完
+        if ( $coupon->used >= $coupon->total ) {
+            //已用完次数
+            throw new InvalidRequestException( '该优惠券可用次数已为0', 403 );
+        }
+
+        //已启用，判断是否在生效时间内
+        /*$date = new Carbon();
+        $date->gt()*/
+        //gt() greater 更大，更晚，返回true or false
+        if ( $coupon->not_before && $coupon->not_before->gt( Carbon::now() ) ) {
+            //未到生效时间
+            throw new InvalidRequestException( '优惠券还没到生效时间', 403 );
+        }
+
+        if ( $coupon->not_after && $coupon->not_after->isBefore( Carbon::now() ) ) {
+            //已经过了有效时间
+            throw new InvalidRequestException( '优惠券已过有效期', 403 );
+        }
+
+        //如果需要检查订单
+        if ( $order ) {
+            //检查订单是否满足的优惠券满减条件
+            if ( $coupon->min_amount > $order->total_amount ) {
+                throw new InvalidRequestException( '该订单未满足满减条件，不能使用', 403 );
+            }
+        }
+
+        return $coupon;
+    }
+
+    public function countTotalAmount( $withoutCouponAmount ) {
+
+        $totalAmount = '';
+        //减固定金额
+        if ( $this->type === self::TYPE_FIXED ) {
+            $totalAmount = $withoutCouponAmount - $this->value;
+        } elseif ( $this->type === self::TYPE_PERCENT ) {
+            //减百分比
+            $totalAmount = ( 1 - 0.01 * $this->value ) * $withoutCouponAmount;
+        }
+
+        return $totalAmount;
     }
 }

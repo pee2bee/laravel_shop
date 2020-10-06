@@ -9,6 +9,7 @@ use App\Http\Requests\OrderRequest;
 use App\Http\Requests\SendReviewRequest;
 use App\Jobs\CloseOrder;
 use App\Models\Address;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\ProductSku;
 use App\Services\OrderService;
@@ -47,8 +48,14 @@ class OrdersController extends Controller {
 
         $user    = $request->user();
         $address = Address::find( $request->address_id );
-        //创建订单
-        $order = $this->order_service->store( $user, $address, $request->remark, $request->items );
+
+        //如果用户输入了优惠码，先检查优惠券是否可用（未对满减验证，需要订单总额）
+        if ( $coupon_code = $request->coupon ) {
+            Coupon::checkCodeValid( $coupon_code );
+        }
+
+        //创建订单，传参用户，地址，备注，商品项，优惠码
+        $order = $this->order_service->store( $user, $address, $request->remark, $request->items, $coupon_code );
 
         //触发定时关闭订单任务
         $this->dispatch( new CloseOrder( $order, config( 'app.order_ttl' ) ) );

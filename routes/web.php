@@ -59,6 +59,10 @@ Route::group( [ 'middleware' => [ 'auth', 'verified' ] ], function () {
     //支付后前端回调
     Route::get( 'payment/alipay/return', 'PaymentController@alipayReturn' )->name( 'payment.alipay.return' );
 
+    //检查优惠券
+    Route::post( 'coupons/check', 'CouponsController@check' )->name( 'coupons.check' );
+    //使用优惠券
+
 
 } );
 

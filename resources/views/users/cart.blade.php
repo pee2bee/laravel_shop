@@ -74,6 +74,18 @@
                 <textarea name="remark" class="form-control" rows="3"></textarea>
               </div>
             </div>
+            <div class="form-group row">
+              <label class="col-form-label col-sm-3 text-md-right">优惠券</label>
+              <div class="col-sm-9 col-md-7">
+                <input type="text" name="coupon">
+                <span>
+                  <a id="check_coupon_code" class="btn btn-primary">检查优惠券</a>
+                </span>
+                <div class="form-text" id="discount_value"></div>
+              </div>
+
+
+            </div>
             <div class="form-group">
               <div class="offset-sm-3 col-sm-3">
                 <button type="button" class="btn btn-primary btn-create-order">提交订单</button>
@@ -131,7 +143,8 @@
               var data = {
                   address_id: $('form select[name=address]').val(),
                   items: [],
-                  remark: $('textarea[name=remark]').val(),
+                  remark: $('textarea[name=remark]').val(),//备注
+                  coupon: $('input[name=coupon]').val(),//优惠码
               }
               //遍历table中的所有tr data-id,取到sku id
               $('table tr[data-id]').each(function () {
@@ -159,6 +172,7 @@
               axios.post('{{ route('orders.store') }}', data)
                   .then(function (response) {
                       swal('订单提交成功', '', 'success')
+
                   }, function (error) {
                       if (error.response.status === 422) {
                           // http 状态码为 422 代表用户输入校验失败
@@ -170,10 +184,28 @@
                           });
                           html += '</div>';
                           swal({content: $(html)[0], icon: 'error'})
+                      } else if (error.response.statue === 403 || error.response.status === 404) {
+                          //资源禁止访问,这里是优惠券过期或不存在
+                          swal(error.response.data.msg, '', 'error')
                       } else {
                           // 其他情况应该是系统挂了
                           swal('系统错误', '', 'error');
                       }
+                  })
+          })
+
+          //监听检查优惠券按钮
+          $('#check_coupon_code').click(function () {
+              //发送请求，检查优惠券，可用返回优惠券信息
+              axios.post('{{ route('coupons.check') }}', {code: $('input[name=coupon]').val()})
+                  .then(function (response) {
+                      //可用（还没检查是否满足满减），先列出来
+                      $('#discount_value').text(response.data.description)
+
+                  }, function (error) {
+                      //优惠券错误
+                      swal(error.response.data.msg, '', 'error')
+                      console.log(error.response.status)
                   })
           })
       })
