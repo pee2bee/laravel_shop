@@ -47,6 +47,9 @@ class CloseOrder implements ShouldQueue {
                 //把每一项的库存加回去
                 $item->productSku->addStock( $item->amount );
             }
+            //把优惠券使用次数减回去
+            $this->order->coupon->changeused( false );
+
         } );
     }
 }

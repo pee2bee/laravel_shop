@@ -18,6 +18,7 @@ use App\Models\ProductSku;
 use App\Models\User;
 use Carbon\Carbon;
 use Symfony\Component\DomCrawler\AbstractUriElement;
+use Auth;
 
 class OrderService {
 
@@ -79,13 +80,12 @@ class OrderService {
                 //检查优惠券对该订单是否可用
                 //先更新订单总额,不然总额为0
                 $order->update( [ 'total_amount' => $totalAmount ] );
-                $coupon = Coupon::checkCodeValid( $coupon_code, $order );
+                $coupon = Coupon::checkCodeValid( $coupon_code, $order, Auth::user() );
                 //根据优惠券类型来计算金额
                 $totalAmount           = $coupon->countTotalAmount( $totalAmount );
                 $order->coupon_code_id = $coupon->id;//更新优惠券id到订单
-                //优惠券使用数量自增
-                $coupon->used ++;
-                $coupon->save();
+                //自增使用次数
+                $coupon->changeUsed( true );
             }
 
             //更新订单总额

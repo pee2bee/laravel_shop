@@ -172,6 +172,8 @@
               axios.post('{{ route('orders.store') }}', data)
                   .then(function (response) {
                       swal('订单提交成功', '', 'success')
+                      let id = response.data.id
+                      location.href = '/orders/' + id
 
                   }, function (error) {
                       if (error.response.status === 422) {
@@ -184,12 +186,9 @@
                           });
                           html += '</div>';
                           swal({content: $(html)[0], icon: 'error'})
-                      } else if (error.response.statue === 403 || error.response.status === 404) {
-                          //资源禁止访问,这里是优惠券过期或不存在
-                          swal(error.response.data.msg, '', 'error')
                       } else {
-                          // 其他情况应该是系统挂了
-                          swal('系统错误', '', 'error');
+                          //资源禁止访问,或不存在,或系统错误
+                          swal(error.response.data.msg, '', 'error')
                       }
                   })
           })

@@ -170,6 +170,6 @@ class Order extends Model {
 
     //关联优惠券
     public function coupon() {
-        return $this->belongsTo( Coupon::class );
+        return $this->belongsTo( Coupon::class, 'coupon_code_id' );
     }
 }

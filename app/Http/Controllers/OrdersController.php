@@ -75,6 +75,7 @@ class OrdersController extends Controller {
         //
 
         $order = Order::query()->with( 'items.product', 'items.productSku' )->find( $id );
+
         //权限判断
         $this->authorize( 'own', $order );
 
