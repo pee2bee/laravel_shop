@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         //生成10条数据
-        $user = factory(User::class)->times(50)->make()->makeVisible('password')->toArray();
+        $user = factory(User::class)->times(10)->make()->makeVisible('password')->toArray();
 
         User::insert($user);
 

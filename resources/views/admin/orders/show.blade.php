@@ -53,8 +53,12 @@
         </tr>
         <tr>
           <td>退款状态:</td>
-          <td>{{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}
-            退款理由： {{ $order->extra['refund_reason'] }}</td>
+          <td>{{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}</td>
+          @if($order->refund_status != \App\Models\Order::REFUND_STATUS_PENDING)
+            <td>
+              退款理由： {{ $order->extra['refund_reason'] }}
+            </td>
+          @endif
           {{--如果已申请退款,展示同意或拒绝退款按钮--}}
           @if($order->refund_status === \App\Models\Order::REFUND_STATUS_APPLIED)
             <td>

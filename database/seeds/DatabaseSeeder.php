@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder {
         $this->call( AdminTablesSeeder::class );
         $this->call( ProductSeeder::class );
         $this->call( CouponSeeder::class );
+        $this->call( OrderSeeder::class );
     }
 }

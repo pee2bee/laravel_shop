@@ -158,12 +158,12 @@ class Order extends Model {
     }
 
     //创建退款单号
-    public function createRefundNo() {
+    public static function createRefundNo() {
         do {
             // Uuid类可以用来生成大概率不重复的字符串
             $no = Uuid::uuid4()->getHex();
             //如果有重复的就继续生成
-        } while ( self::query()->where( 'refund_no', $no ) );
+        } while ( self::query()->where( 'refund_no', $no )->first() );
 
         return $no;
     }
