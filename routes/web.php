@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 /*首页路由*/
 Route::redirect( '/', '/products' )->name( 'root' );
 
+
 /*登录认证相关路由，开启邮箱验证路由*/
 Auth::routes( [ 'verify' => true ] );
 
@@ -74,6 +75,7 @@ Route::get( 'products/{product}', 'ProductsController@show' )->name( 'products.s
 //支付后通知回调，支付宝自动向该路由发起请求
 //需要忽略csrf验证
 Route::post( 'payment/alipay/notify', 'PaymentController@alipayNotify' )->name( 'payment.alipay.notify' );
+
 
 
 
