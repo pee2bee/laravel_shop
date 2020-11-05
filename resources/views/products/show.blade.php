@@ -60,40 +60,40 @@
               <li class="nav-item">
                 <a class="nav-link" href="#product-reviews-tab" aria-controls="product-reviews-tab" role="tab"
                    data-toggle="tab" aria-selected="false">用户评价</a>
-                <div role="tabpanel" class="tab-pane" id="product-reviews-tab">
-                  <!-- 评论列表开始 -->
-                  <table class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                      <td>用户</td>
-                      <td>商品</td>
-                      <td>评分</td>
-                      <td>评价</td>
-                      <td>时间</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($reviews as $review)
-                      <tr>
-                        <td>{{ $review->order->user->name }}</td>
-                        <td>{{ $review->productSku->title }}</td>
-                        <td>{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</td>
-                        <td>{{ $review->review }}</td>
-                        <td>{{ $review->reviewed_at->format('Y-m-d H:i') }}</td>
-                      </tr>
-                    @endforeach
-                    </tbody>
-                  </table>
-                  <!-- 评论列表结束 -->
-                </div>
               </li>
             </ul>
-            <div class="tab-content">
-              <div role="tabpanel" class="tab-pane active" id="product-detail-tab">
-                {!! $product->description !!}
-              </div>
-              <div role="tabpanel" class="tab-pane" id="product-reviews-tab">
-              </div>
+          </div>
+
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="product-detail-tab">
+              {!! $product->description !!}
+            </div>
+            <div role="tabpanel" class="tab-pane" id="product-reviews-tab">
+              <!-- 评论列表开始 -->
+              <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  <td>用户</td>
+                  <td>商品</td>
+                  <td>评分</td>
+                  <td>评价</td>
+                  <td>时间</td>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($reviews as $review)
+                  <tr>
+                    <td>{{ $review->order->user->name }}</td>
+                    <td>{{ $review->productSku->title }}</td>
+                    <td>{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</td>
+                    <td>{{ $review->review }}</td>
+                    <td>{{ $review->reviewed_at->format('Y-m-d H:i') }}</td>
+                  </tr>
+                @endforeach
+                </tbody>
+              </table>
+              <!-- 评论列表结束 -->
+
             </div>
           </div>
         </div>
@@ -122,8 +122,8 @@
                       //判断返回状态码，如果是401，就提示未登录
                       if (error.response && error.response.status === 401) {
                           swal('请先登录', '', 'error');
-                      } else if (error.response && (error.response.msg || error.response.messga)) {
-                          //其他错误信息
+                      } else if (error.response && (error.response.msg || error.response.message)) {
+                          //其他错误信息 403 500等
                           swal(error.response.msg ? error.response.msg : error.response.message, '', 'error')
                       } else {
                           //系统挂了
@@ -178,8 +178,10 @@
                           });
                           html += '</div>';
                           swal({content: $(html)[0], icon: 'error'})
+                      } else if (error.response.status === 403) {
+                          //403认证失败，无权访问
+                          swal(error.response.data.message, '', 'error')
                       } else {
-
                           // 其他情况应该是系统挂了
                           swal('系统错误', '', 'error');
                       }

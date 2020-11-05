@@ -24,13 +24,6 @@ $factory->define( Order::class, function ( Faker $faker ) {
         //增加优惠券使用量
         $coupon->changeUsed( true );
     }
-//    dd( $ship_status );
-//    dd( $refund );
-//    dd( $address );
-//    dd( $user );
-//    dd( $coupon );
-
-    //
 
     return [
         'address'        => [

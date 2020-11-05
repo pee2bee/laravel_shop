@@ -109,7 +109,7 @@ class OrdersController extends Controller {
         //预加载关联
         $order->load( 'items.product', 'items.productSku' );
 
-        return view( 'users.order.review', compact( 'order' ) );
+        return view( 'users.order_review', compact( 'order' ) );
     }
 
     public function sendReview( Order $order, SendReviewRequest $request ) {

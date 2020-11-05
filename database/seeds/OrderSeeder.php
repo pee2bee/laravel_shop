@@ -15,7 +15,6 @@ class OrderSeeder extends Seeder {
         //创建100条订单
         $orders = factory( \App\Models\Order::class, 100 )->create();
 
-
         //保存创建订单的所有商品，用于后面的商品评分
         $products = collect( [] );
         //创建对应的订单项
@@ -68,6 +67,5 @@ class OrderSeeder extends Seeder {
                 'sold_count'   => $result->sold_count,
             ] );
         } );
-
     }
 }

@@ -181,7 +181,6 @@ class OrdersController extends AdminController {
         }
 
         return $order;
-
     }
 
     public function disagreeRefund( Order $order, DisagreeRefundRequest $request ) {

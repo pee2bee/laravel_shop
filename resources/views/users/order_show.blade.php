@@ -25,9 +25,9 @@
                     </a>
                   </div>
                   <div>
-                    <sapn class="product-title">
+                    <span class="product-title">
                       <a href="{{ route('products.show',$item->product_id) }}">{{ $item->product->title }}</a>
-                    </sapn>
+                    </span>
                     <span class="sku-title">{{ $item->productSku->title }}</span>
                   </div>
                 </td>
@@ -113,7 +113,7 @@
                 <div class="value">￥{{ $order->total_amount }}</div>
               </div>
               <div>
-                <sqan>订单状态</sqan>
+                <span>订单状态</span>
                 <div class="value">
                   @if($order->paid_at)
                     @if($order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
@@ -139,12 +139,9 @@
               {{----}}
               @if($order->ship_status === \App\Models\Order::SHIP_STATUS_DELIVERED)
                 <div class="receive-button">
-                  <form method="post" action="{{ route('orders.received', [$order->id]) }}">
-                    <!-- csrf token 不能忘 -->
-                    {{ csrf_field() }}
-                    <button type="submit" class="btn btn-sm btn-success">确认收货</button>
-                  </form>
+                  <button class="btn btn-sm btn-success">确认收货</button>
                 </div>
+
               @endif
 
               {{--已支付，显示申请退款按钮--}}
@@ -168,34 +165,36 @@
       $(document).ready(function () {
 
           //确认收货按钮提交
-          $('.receive-button button[type=submit]').click(function () {
+          $('.receive-button button').click(function () {
               swal({
                   title: '你确定要收货吗？',
                   icon: 'warning',
                   dangerMode: true,
                   buttons: ['取消', '确认收货']
-              })
-                  .then(function (willDo) {
-                      if (!willDo) {
-                          return
-                      }
-                      //发送请求
-                      axios.post('{{ route('orders.received', [$order->id]) }}')
-                          .then(function () {
-                              //刷新页面
-                              location.reload()
-                          }, function (error) {
-                              if (error.response.status === 401) {
-                                  swal('请登录后再操作', '', 'error')
-                              } else if (error.response && (error.response.msg || error.response.messga)) {
-                                  //其他错误信息
-                                  swal(error.response.msg ? error.response.msg : error.response.message, '', 'error')
-                              } else {
-                                  //系统挂了
-                                  swal('系统错误', '', 'error')
-                              }
-                          })
+              }).then(function (willDo) {
+                  if (!willDo) {
+                      console.log(willDo)
+                      return
+                  }
+                  //发送请求
+                  axios.post('{{ route('orders.received', [$order->id]) }}', {
+                      _token: '{{ csrf_token() }}'
                   })
+                      .then(function () {
+                          //刷新页面
+                          location.reload()
+                      }, function (error) {
+                          if (error.response.status === 401) {
+                              swal('请登录后再操作', '', 'error')
+                          } else if (error.response && (error.response.msg || error.response.messga)) {
+                              //其他错误信息
+                              swal(error.response.msg ? error.response.msg : error.response.message, '', 'error')
+                          } else {
+                              //系统挂了
+                              swal('系统错误', '', 'error')
+                          }
+                      })
+              })
           })
 
           //退款申请按钮提交
