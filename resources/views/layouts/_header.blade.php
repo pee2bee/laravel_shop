@@ -1,8 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-static-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-static-top header">
   <div class="container">
     <!-- Branding Image -->
-    <a class="navbar-brand " href="{{ url('/') }}">
-      Laravel Shop
+    <a class="navbar-brand " href="{{ url('/') }}" ml="0">
+      {{config('app.name')}}
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,7 +24,7 @@
         @else
           {{--购物车--}}
           <li class="nav-item">
-            <a class="nav-link mt-1 mr-3" href="{{ route('cart.index') }}"><i class="fa fa-shopping-cart"></i></a>
+            <a class="nav-link mt-1 mr-3" href="{{ route('cart.index') }}">购物车</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -36,6 +36,7 @@
 
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{{ route('products.favorites') }}" class="dropdown-item">我的收藏</a>
+              <a class="dropdown-item" href="{{ route('cart.index') }}" class="dropdown-item">我的购物车</a>
               <a class="dropdown-item" href="{{ route('orders.index') }}" class="dropdown-item">我的订单</a>
               <a class="dropdown-item" href="{{ route('addresses.index') }}" class="dropdown-item">我的地址</a>
               <a class="dropdown-item" id="logout" href="#"

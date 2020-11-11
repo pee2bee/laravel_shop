@@ -58,7 +58,6 @@ class CartItemsController extends Controller {
     public function destroy( $id ) {
         //
         $this->cart_service->remove( $id );
-
         return [];
     }
 }

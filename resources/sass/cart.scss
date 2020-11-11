@@ -1,10 +1,17 @@
 .cart-index-page {
+  .no-cartItem {
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 30px;
+  }
+
   .product_list {
     .preview {
       img {
         max-width: 80px;
         max-height: 80px;
       }
+
       margin-right: 20px;
     }
 
@@ -13,6 +20,7 @@
       flex-direction: row;
       align-items: flex-start;
       font-size: 12px;
+
       .product_title, .sku_title, .warning {
         display: block;
       }
@@ -21,10 +29,12 @@
         color: #3c3c3c;
         font-size: 14px;
       }
+
       .not_on_sale {
         .product_title, .sku_title {
           text-decoration: line-through;
         }
+
         .warning {
           color: red;
         }

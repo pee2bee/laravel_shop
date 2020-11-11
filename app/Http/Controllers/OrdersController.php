@@ -112,6 +112,7 @@ class OrdersController extends Controller {
         return view( 'users.order_review', compact( 'order' ) );
     }
 
+    //保存评价到orderItem
     public function sendReview( Order $order, SendReviewRequest $request ) {
 
         //校验权限
@@ -128,6 +129,7 @@ class OrdersController extends Controller {
 
         //获取评价数组
         $reviews = $request->reviews;
+        //pan
         //开启事务
         \DB::transaction( function () use ( $reviews, $order ) {
             //遍历reviews 数组

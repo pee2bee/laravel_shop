@@ -163,7 +163,10 @@
               })
                   .then(function () {
                       swal('加入购物车成功', '', 'success')
-                      location.href = '{{ route('cart.index') }}'
+                      setTimeout(function () {
+                          location.href = '{{ route('cart.index') }}'
+                      }, 2000)
+
                   }, function (error) {
                       if (error.response.status === 401) {
                           swal('请先登录', '', 'error')

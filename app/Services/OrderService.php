@@ -25,7 +25,7 @@ class OrderService {
     public function get() {
         $user = \Auth::user();
 
-        return $orders = $user->orders()->with( 'items.product', 'items.productSku' )->paginate( 10 );
+        return $orders = $user->orders()->with( 'items.product', 'items.productSku' )->orderBy( 'created_at', 'desc' )->paginate( 10 );
     }
 
     public function store( User $user, Address $address, $remark, $items, $coupon_code = null ) {

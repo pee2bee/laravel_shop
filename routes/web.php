@@ -51,7 +51,7 @@ Route::group( [ 'middleware' => [ 'auth', 'verified' ] ], function () {
     //订单评价视图
     Route::get( 'orders/{order}/review', 'OrdersController@review' )->name( 'orders.review.show' );
     //订单评价保存
-    Route::post( 'orders/{order}/review', 'OrdersController@senndReview' )->name( 'orders.review.store' );
+    Route::post( 'orders/{order}/review', 'OrdersController@sendReview' )->name( 'orders.review.store' );
     //订单退款申请
     Route::post( 'orders/{order}/applyRefund', 'OrdersController@applyRefund' )->name( 'orders.refund.apply' );
 
