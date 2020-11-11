@@ -1,17 +1,11 @@
 // Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+//@import url('https://fonts.googleapis.com/css?family=Nunito');
 // Variables
 @import 'variables';
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 //icon
-@import "~@fortawesome/fontawesome-free/css/all.css";
-//product
-@import "product";
-//cart
-@import "cart";
-//order
-@import "order";
+//@import "~@fortawesome/fontawesome-free/css/all.css";
 
 
 /* header */
@@ -35,9 +29,11 @@ html {
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
+  overflow-x: hidden; //左右不出现滚动条
 }
 
-.footer {
+//footer
+.page-footer {
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -59,3 +55,11 @@ body {
     }
   }
 }
+
+
+//product
+@import "product";
+//cart
+@import "cart";
+//order
+@import "order";

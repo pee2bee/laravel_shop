@@ -19,6 +19,7 @@ $factory->define( Product::class, function ( Faker $faker ) {
         'images/u=3192481053,1467100590&fm=26&gp=0.jpg',
         'images/u=3807224309,3405548595&fm=26&gp=0.jpg',
         'images/u=3924847948,2683293372&fm=26&gp=0.jpg'
+
     ] );
 
     return [

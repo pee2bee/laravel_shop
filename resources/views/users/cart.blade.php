@@ -8,58 +8,62 @@
       <div class="card">
         <div class="card-header"><h2>购物车</h2></div>
         <div class="card-body">
-          <table class="table table-striped">
-            <thead>
-            <tr>
-              <th><input type="checkbox" id="select-all"></th>
-              <th>商品信息</th>
-              <th>单价</th>
-              <th>数量</th>
-              <th>操作</th>
-            </tr>
-            </thead>
-            <tbody class="product_list">
-            @foreach($cartItems as $item)
-              <tr data-id="{{ $item->product_sku_id }}">
-                <td>
-                  <input type="checkbox" name="select"
-                         value="{{ $item->productSku->id }}" {{ $item->productSku->product->on_sale ? 'checked' : 'disabled' }}>
-                </td>
-                <td class="product_info">
-                  <div class="preview">
-                    <a target="_blank" href="{{ route('products.show', [$item->productSku->product_id]) }}">
-                      <img src="{{ $item->productSku->product->image_url }}">
-                    </a>
-                  </div>
-                  <div @if(!$item->productSku->product->on_sale) class="not_on_sale" @endif>
+          @if(count($cartItems))
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th><input type="checkbox" id="select-all"></th>
+                <th>商品信息</th>
+                <th>单价</th>
+                <th>数量</th>
+                <th>操作</th>
+              </tr>
+              </thead>
+              <tbody class="product_list">
+              @foreach($cartItems as $item)
+                <tr data-id="{{ $item->product_sku_id }}">
+                  <td>
+                    <input type="checkbox" name="select"
+                           value="{{ $item->productSku->id }}" {{ $item->productSku->product->on_sale ? 'checked' : 'disabled' }}>
+                  </td>
+                  <td class="product_info">
+                    <div class="preview">
+                      <a target="_blank" href="{{ route('products.show', [$item->productSku->product_id]) }}">
+                        <img src="{{ $item->productSku->product->image_url }}">
+                      </a>
+                    </div>
+                    <div @if(!$item->productSku->product->on_sale) class="not_on_sale" @endif>
               <span class="product_title">
                 <a target="_blank"
                    href="{{ route('products.show', [$item->productSku->product_id]) }}">{{ $item->productSku->product->title }}</a>
               </span>
-                    <span class="sku_title">{{ $item->productSku->title }}</span>
-                    @if(!$item->productSku->product->on_sale)
-                      <span class="warning">该商品已下架</span>
-                    @endif
-                  </div>
-                </td>
-                <td><span class="price">￥{{ $item->productSku->price }}</span></td>
-                <td>
-                  <input type="text" class="form-control form-control-sm amount"
-                         @if(!$item->productSku->product->on_sale) disabled @endif name="amount"
-                         value="{{ $item->amount }}">
-                </td>
-                <td>
-                  <button class="btn btn-sm btn-danger btn-remove">移除</button>
-                </td>
-              </tr>
-            @endforeach
-            </tbody>
-          </table>
+                      <span class="sku_title">{{ $item->productSku->title }}</span>
+                      @if(!$item->productSku->product->on_sale)
+                        <span class="warning">该商品已下架</span>
+                      @endif
+                    </div>
+                  </td>
+                  <td><span class="price">￥{{ $item->productSku->price }}</span></td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm amount"
+                           @if(!$item->productSku->product->on_sale) disabled @endif name="amount"
+                           value="{{ $item->amount }}">
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-danger btn-remove">移除</button>
+                  </td>
+                </tr>
+              @endforeach
+              </tbody>
+            </table>
+          @else
+            <div class="no-cartItem">购物车为空</div>
+          @endif
 
           <form class="form-horizontal" role="form" id="order-form">
             <div class="form-group row">
               <label class="col-form-label col-sm-3 text-md-right">选择收货地址</label>
-              <div class="col-sm-9 col-md-7">
+              <div class="col-sm-9 col-md-6">
                 <select class="form-control" name="address">
                   @foreach($addresses as $address)
                     <option
@@ -67,6 +71,7 @@
                   @endforeach
                 </select>
               </div>
+              <span><a class="btn btn-primary " href="{{route('addresses.create')}}">新增</a></span>
             </div>
             <div class="form-group row">
               <label class="col-form-label col-sm-3 text-md-right">备注</label>
@@ -76,15 +81,13 @@
             </div>
             <div class="form-group row">
               <label class="col-form-label col-sm-3 text-md-right">优惠券</label>
-              <div class="col-sm-9 col-md-7">
-                <input type="text" name="coupon">
-                <span>
-                  <a id="check_coupon_code" class="btn btn-primary">检查优惠券</a>
-                </span>
-                <div class="form-text" id="discount_value"></div>
+              <div class="col-sm-9 col-md-6">
+                <input class="form-control" type="text" name="coupon">
               </div>
-
-
+              <span>
+                  <a id="check_coupon_code" class="btn btn-primary">检查</a>
+                </span>
+              <div class="form-text" id="discount_value"></div>
             </div>
             <div class="form-group">
               <div class="offset-sm-3 col-sm-3">
@@ -125,17 +128,16 @@
           })
 
           // 监听 全选/取消全选 单选框的变更事件
-          $('#select-all').change(function () {
-              // 获取单选框的选中状态
-              // prop() 方法可以知道标签中是否包含某个属性，当单选框被勾选时，对应的标签就会新增一个 checked 的属性
-              var checked = $(this).prop('checked');
-              // 获取所有 name=select 并且不带有 disabled 属性的勾选框
-              // 对于已经下架的商品我们不希望对应的勾选框会被选中，因此我们需要加上 :not([disabled]) 这个条件
-              $('input[name=select][type=checkbox]:not([disabled])').each(function () {
-                  // 将其勾选状态设为与目标单选框一致
-                  $(this).prop('checked', checked);
-              });
+          // 获取单选框的选中状态
+          // prop() 方法可以知道标签中是否包含某个属性，当单选框被勾选时，对应的标签就会新增一个 checked 的属性
+          var checked = $(this).prop('checked');
+          // 获取所有 name=select 并且不带有 disabled 属性的勾选框
+          // 对于已经下架的商品我们不希望对应的勾选框会被选中，因此我们需要加上 :not([disabled]) 这个条件
+          $('input[name=select][type=checkbox]:not([disabled])').each(function () {
+              // 将其勾选状态设为与目标单选框一致
+              $(this).prop('checked', checked);
           });
+
 
           //监听创建订单按钮
           $('.btn-create-order').click(function () {

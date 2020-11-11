@@ -34,6 +34,7 @@ class CartService {
             //可以传单个id值，也可以传数组，如果是单个id值，转为数组
             $ids = [ $ids ];
         }
-        \Auth::user()->cartItems()->whereIn( 'id', $ids )->delete();
+
+        \Auth::user()->cartItems()->whereIn( 'product_sku_id', $ids )->delete();
     }
 }

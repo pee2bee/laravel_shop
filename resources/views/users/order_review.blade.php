@@ -61,7 +61,8 @@
                       {{ $item->review }}
                     @else
                       <textarea class="form-control {{ $errors->has('reviews.'.$index.'.review') ? 'is-invalid' : '' }}"
-                                name="reviews[{{$index}}][review]"></textarea>
+                                name="reviews[{{$index}}][review]">
+                        {{old("reviews.$index.review")}}</textarea>
                       @if($errors->has('reviews.'.$index.'.review'))
                         @foreach($errors->get('reviews.'.$index.'.review') as $msg)
                           <span class="invalid-feedback" role="alert"><strong>{{ $msg }}</strong></span>
